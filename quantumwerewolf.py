@@ -222,7 +222,7 @@ def deathp(name):       # Shows the probability of death for some player
                     if p[i] == "w" and p[num(name)-1] != "w":
                         deathn += deaths[num(name)-1][i]
             dead = deathn/len(perms)
-            if dead == 1:
+            if dead >= 1:
                 kill(name)
         return dead
 
