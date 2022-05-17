@@ -3,17 +3,17 @@ I might one day upload a new version with better code and more roles.
 
 Now, on to the actual game...
 
-~ What is Quantum Werewolf? ~
+--- What is Quantum Werewolf? ---
 Quantum Werewolf is a game based on the party game "The Werewolves of Millers Hollow" (known as "Weerwolven van Wakkerdam" to Dutch audiences) with a quantum mechanical twist.
 
-~ What is "The Werewolves of Millers Hollow"? ~
+--- What is "The Werewolves of Millers Hollow"? ---
 The Werewolves of Millers Hollow is a classical party game where each player (save the game master) gets a secret role card assigned to them. There are two teams: the werewolves
 and the village (consisting of all roles except the werewolves). At night, each player secretly takes an action corresponding to their role -- the seer gets to see another player's card,
 Cupid can make two players fall in love, and the werewolves vote on who they will eat that night. During the day, all players vote on another player to be lynched.
 The village's goal is to kill all werewolves, and the werewolves' goal is to kill all non-werewolves. When only one faction is left, they win.
 
-~ What is the quantum twist? ~
-The quantum twist introduced in Quantum Werewolf is a superposition of roles. This means that every player is every role at once, and gets to take actions corresponding to all roles at night.
+--- What is the quantum twist? ---
+The quantum twist introduced in Quantu Werewolf is a superposition of rolems. This means that every player is every role at once, and gets to take actions corresponding to all roles at night.
 Of course, the superposition can be collapsed by measurements. Currently, there are two ways of measuring the superposition:
 1. A player uses his Seer action to look at someone else's role, partially collapsing the superposition (and introducing entanglement!);
 2. A player dies, which reveals his role to all players, collapsing the superposition quite a bit.
@@ -22,7 +22,7 @@ Since there is no way of knowing the final gamestate (in fact, your actions infl
 and try to make the superposition collapse in their favour. The game is very complex, and honestly isn't much fun to play with your grandma. However, it can be used as an
 education tool for superpositions, or as a way to pit physicists against each other in cracking the code.
 
-~ What are the rules? ~
+--- What are the rules? ---
 The game can support any number of players, one of which must be the game master (or GM). The GM does not actively compete with the other players, but runs the game behind
 the screens.
 P: (Python script) players are added using the "player" command.
