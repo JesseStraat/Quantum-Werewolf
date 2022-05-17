@@ -27,6 +27,7 @@ and try to make the superposition collapse in their favour. The game is very com
 education tool for superpositions, or as a way to pit physicists against each other in cracking the code.
 
 --- What are the rules? ---
+
 The game can support any number of players, one of which must be the game master (or GM). The GM does not actively compete with the other players, but runs the game behind
 the screens.
 P: (Python script) players are added using the "player" command.
@@ -39,6 +40,7 @@ but the other players might figure out later on...
 
 Using the deck of cards chosen by the GM (by default, 2 werewolves and 1 seer), all permutations of possible game states are generated.
 FE: At the start of the game, the 12 possible permutations are (let w represent werewolf, s represent seer and v represent villager)
+
 [s, w, w, v], [s, w, v, w], [s, v, w, w], [w, s, w, v], [w, s, v, w], [v, s, w, w], [w, w, s, v], [w, v, s, w], [v, w, s, w], [w, w, v, s], [w, v, w, s], [v, w, w, s].
 
 The players are given how many possible permutations there are, and a table of probabilities on which roles they might have.
@@ -46,7 +48,7 @@ FE: Zack will show the players the following information:
 There are 12 possible permutations left.
 
   Player    Villagers    Seer    Werewolf    Dead
---------  -----------  ------  ----------  ------
+__________________________________________________
        1         0.25    0.25         0.5       0
        2         0.25    0.25         0.5       0
        3         0.25    0.25         0.5       0
@@ -90,7 +92,7 @@ At day:
    There are 11 possible permutations left.
    
      Player    Villagers      Seer    Werewolf      Dead
-   --------  -----------  --------  ----------  --------
+   ______________________________________________________
           1     0.272727  0.181818    0.545455  0
           2     0.181818  0.272727    0.545455  0
           3     0.272727  0.272727    0.454545  0.181818
