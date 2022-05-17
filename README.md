@@ -47,12 +47,13 @@ The players are given how many possible permutations there are, and a table of p
 FE: Zack will show the players the following information:
 There are 12 possible permutations left.
 
-  Player    Villagers    Seer    Werewolf    Dead
-__________________________________________________
-       1         0.25    0.25         0.5       0
-       2         0.25    0.25         0.5       0
-       3         0.25    0.25         0.5       0
-       4         0.25    0.25         0.5       0
+|Player  |  Villagers |     Seer |  Werewolf |  Dead |
+| ------ | ---------- | -------- | --------- | ----- |
+|     1  |       0.25 | 0.25     |  0.5      | 0     |
+|     2  |       0.25 | 0.25     |  0.5      | 0     |
+|     3  |       0.25 | 0.25     |  0.5      | 0     |
+|     4  |       0.25 | 0.25     |  0.5      | 0     |
+
 P: The above few steps are automatically taken upon running "start()". You can set the deck using "deck".
 
 Now the game can officially begin. It starts with a night phase
@@ -91,12 +92,12 @@ At day:
    
    There are 11 possible permutations left.
    
-     Player    Villagers      Seer    Werewolf      Dead
-   ______________________________________________________
-          1     0.272727  0.181818    0.545455  0
-          2     0.181818  0.272727    0.545455  0
-          3     0.272727  0.272727    0.454545  0.181818
-          4     0.272727  0.272727    0.454545  0
+     |Player  |  Villagers |     Seer  |  Werewolf |     Dead |
+     | ------ | ---------- | --------- | --------- | -------- |
+     |     1  |   0.272727 | 0.181818  |  0.545455 | 0        |
+     |     2  |   0.181818 | 0.272727  |  0.545455 | 0        |
+     |     3  |   0.272727 | 0.272727  |  0.454545 | 0.181818 |
+     |     4  |   0.272727 | 0.272727  |  0.454545 | 0        |
    
     P: This is realised through running "results()".
     
