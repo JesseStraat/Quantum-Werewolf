@@ -17,7 +17,7 @@ The village's goal is to kill all werewolves, and the werewolves' goal is to kil
 
 --- What is the quantum twist? ---
 
-The quantum twist introduced in Quantum Werewolf is a superposition of rolems. This means that every player is every role at once, and gets to take actions corresponding to all roles at night.
+The quantum twist introduced in Quantum Werewolf is a superposition of roles. This means that every player is every role at once, and gets to take actions corresponding to all roles at night.
 Of course, the superposition can be collapsed by measurements. Currently, there are two ways of measuring the superposition:
 1. A player uses his Seer action to look at someone else's role, partially collapsing the superposition (and introducing entanglement!);
 2. A player dies, which reveals his role to all players, collapsing the superposition quite a bit.
