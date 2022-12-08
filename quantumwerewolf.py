@@ -17,9 +17,9 @@ def player(name):       # Adds a player to the game
     
     def addplayer(name: str):   #The actual function that adds the player
         if isinstance(name, str):
-            if n in names:
-                print("Player {} already exists!".format(n))
-            else: names.append(n)
+            if name in names:
+                print("Player {} already exists!".format(name))
+            else: names.append(name)
         else: print("Wrong data type: {}, must be either string or list of strings".format(type(name)))
     
     if checkstarted(False):
@@ -30,7 +30,7 @@ def player(name):       # Adds a player to the game
                 addplayer(n)
         
         elif isinstance(name, str):
-            addplayer(n)
+            addplayer(name)
         
         else: print("Wrong data type: {}, must be either string or list of strings".format(type(name)))
 
