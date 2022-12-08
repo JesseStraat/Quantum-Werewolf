@@ -41,8 +41,7 @@ the screens.
     player(['Alice', 'Bob', 'Craig', 'David'])
 
 At the beginning of the game, all players (except the GM) are assigned a random ID number. Only the GM and the player can know someone's secret ID.
-FE: Randomly, Alice is assigned to be player 1, Bob is player 2, Craig is player 3 and David is player 4. Only Alice and Zack can know that Alice is player 1 at this stage,
-but the other players might figure out later on...
+> FE: Randomly, Alice is assigned to be player 1, Bob is player 2, Craig is player 3 and David is player 4. Only Alice and Zack can know that Alice is player 1 at this stage, but the other players might figure out later on...
 
 Using the deck of cards chosen by the GM (by default, 2 werewolves and 1 seer), all permutations of possible game states are generated.
 >FE: At the start of the game, the 12 possible permutations are (let w represent werewolf, s represent seer and v represent villager)
@@ -50,8 +49,8 @@ Using the deck of cards chosen by the GM (by default, 2 werewolves and 1 seer), 
     [s, w, w, v], [s, w, v, w], [s, v, w, w], [w, s, w, v], [w, s, v, w], [v, s, w, w], [w, w, s, v], [w, v, s, w], [v, w, s, w], [w, w, v, s], [w, v, w, s], [v, w, w, s].
 
 The players are given how many possible permutations there are, and a table of probabilities on which roles they might have.
-FE: Zack will show the players the following information:
-There are 12 possible permutations left.
+> FE: Zack will show the players the following information:
+> There are 12 possible permutations left.
 
     |Player  |  Villagers |     Seer |  Werewolf |  Dead |
     | ------ | ---------- | -------- | --------- | ----- |
@@ -64,17 +63,18 @@ There are 12 possible permutations left.
 
 Now the game can officially begin. It starts with a night phase
 
-At night:
-   Actions are taken in order of ID, although only the GM knows everyone's ID, so he may only commit the actions once everyone has submitted their targets.
+#### During the night:
 
- - Each player with a non-zero probability of being a seer can look at another player's role. All permutations where the acting player is a seer and the target is not
+- Actions are taken in order of ID, although only the GM knows everyone's ID, so he may only commit the actions once everyone has submitted their targets.
+
+- Each player with a non-zero probability of being a seer can look at another player's role. All permutations where the acting player is a seer and the target is not
    the role seen by the seer are eliminated.
 
    > P: this is realised using the "seer" command.
 
    > FE: Alice looks at Bob's role, so Zack runs "seer('Alice', 'Bob')" and tells Alice she sees he is a werewolf. Permutation [s, v, w, w] gets removed from the superposition, since it is impossible.
 
- - Each player with a non-zero probability of being a werewolf can attempt to kill another player. All alive wolves in all permutations must do this at any point during the game in order for someone to be killed by wolves.
+- Each player with a non-zero probability of being a werewolf can attempt to kill another player. All alive wolves in all permutations must do this at any point during the game in order for someone to be killed by wolves.
 
    > P: this is realised using the "wolf" command.
 
@@ -82,11 +82,11 @@ At night:
 
    N.B.: If the second wolf would die while Alice is still alive, it would not make Craig fully dead in the permutations in which Alice is the werewolf, and it stays at 1/2. If, however, Alice decides to attack Craig again, it would make him fully dead in those permutations.
 
- - After everyone had their actions, it becomes day.
+- After everyone had their actions, it becomes day.
 
-At day:
+#### During the day:
 
- - The GM reveals whether anyone died during the night, and if they did, they will reveal the dead person's role. All permutations where he wasn't that role are removed.
+- The GM reveals whether anyone died during the night, and if they did, they will reveal the dead person's role. All permutations where he wasn't that role are removed.
 
    N.B.: A player can only die at night if he is fully dead in all permutations.
 
@@ -119,9 +119,7 @@ At day:
 The game ends when in all permutations, only the werewolves are alive, only the village is alive or everyone has died. In the event of the game ending, all players who
 are in the winning team (in all permutations) win. The superposition doesn't necessarily have to collapse fully for the game to end in a village win.
 
-FE: if on the second day, Bob is lynched and revealed to be a werewolf, there are still the permutations [s, w, v, w] and [v, w, s, w] left!
+> FE: if on the second day, Bob is lynched and revealed to be a werewolf, there are still the permutations [s, w, v, w] and [v, w, s, w] left!
 Nonetheless, the town, consisting of Alice and Craig, wins!
-
-
 
 I hope this explanation was clear. Feel free to contact me if you have any questions!
