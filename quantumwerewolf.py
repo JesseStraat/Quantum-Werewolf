@@ -11,8 +11,7 @@ def add_players(*names):       # Adds a player to the game
     # name: the name (or list of names) of the player(s) to add
     
     # The game can't be ongoing
-    if checkstarted(True):
-        print("Cannot add players during a game")
+    if not checkstarted(False):
         return None
 
     # Add names from input and input lists
