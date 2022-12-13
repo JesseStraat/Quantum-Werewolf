@@ -3,35 +3,28 @@ from tabulate import tabulate
 import numpy as np
 import random
 
-
-
-
-names = []              # List of names
+players = []              # List of player names
 rolecount= [2, 1]       # [werewolves, seers]
-players = 10            # This variable is to be used if no names are specified
+playercount = 10            # This variable is to be used if no names are specified
 
-
-
-def player(name):       # Adds a player to the game
+def add_players(*names):       # Adds a player to the game
     # name: the name (or list of names) of the player(s) to add
     
-    def addplayer(name: str):   #The actual function that adds the player
-        if isinstance(name, str):
-            if name in names:
-                print("Player {} already exists!".format(name))
-            else: names.append(name)
-        else: print("Wrong data type: {}, must be either string or list of strings".format(type(name)))
-    
-    if checkstarted(False):
     # The game can't be ongoing
-        if isinstance(name, list):
-        # Allows one to add a list of names at once
-            for n in name:
-                addplayer(n)
-        
-        elif isinstance(name, str):
-            addplayer(name)
-        
+    if checkstarted(False):
+        print("Cannot add players during a game")
+        return
+
+    # Add names from input and input lists
+    for name in names:
+        if isinstance(name, str):
+            # Check if name is not already taken
+            if name in players:
+                print("Player {} already exists!".format(name))
+            else: players.append(name)
+        elif isinstance(name, list):
+            # unwrap list and pass to add_players again
+            add_players(*name)
         else: print("Wrong data type: {}, must be either string or list of strings".format(type(name)))
 
 def deck(roles):        # Lets you set the contents of the deck
@@ -40,14 +33,14 @@ def deck(roles):        # Lets you set the contents of the deck
     rolecount = roles
 
 def idfy():             # Identifies the player names with their IDs
-    idfy = [[i+1, names[i]] for i in range(len(names))]
+    idfy = [[i+1, players[i]] for i in range(len(players))]
     print(tabulate(idfy, headers = ["ID", "Name"]))
 
 def start():            # Starts the game
     if checkstarted(False):
         global nww
-        global names
         global players
+        global playercount
         global perms
         global roles
         global started
@@ -55,10 +48,12 @@ def start():            # Starts the game
         global deaths
         
         # Shuffling the player order
-        random.shuffle(names)
+        random.shuffle(players)
         
-        if names != []: players = len(names)
-        else: names = ["Player " + str(x+1) for x in range(players)]
+        if players != []:
+            playercount = len(names)
+        else:
+            players = ["Player " + str(x+1) for x in range(playercount)]
         
         
         villagers = players - sum(rolecount)
@@ -100,9 +95,9 @@ def stop():             # Stops the game (duh)
 
 
 def reset():            # Resets the game (duh)
-    global names
+    global players
     global rolecount
-    names = list(dnames)
+    players = list(dplayers)
     rolecount= list(drole)
     if started == True: stop()
     print("Game reset.")
@@ -118,7 +113,7 @@ def checkstarted(boolean = True):
 
 def num(name):          # Returns the ID corresponding to someone's name
     #name: the name of the player
-    return names.index(name) + 1
+    return players.index(name) + 1
 
 
 def role(letter):       # Returns the role corresponding to some letter
@@ -143,7 +138,7 @@ def calcprobs():        # Calculates the probabilities
         permt = np.array(perms).T.tolist()
         probst = []
         for i in range(players):
-            probst.append([i+1, permt[i].count("v")/nperm, permt[i].count("s")/nperm, permt[i].count("w")/nperm, deathp(names[i])])
+            probst.append([i+1, permt[i].count("v")/nperm, permt[i].count("s")/nperm, permt[i].count("w")/nperm, deathp(players[i])])
         probs = probst
 
 def seer(seer, target): # Lets a player commit his seer action
@@ -154,13 +149,13 @@ def seer(seer, target): # Lets a player commit his seer action
         target = num(target)
         if probs[seer-1][1] == 0:
         # Someone may only do his seer action if he can possibly be one (to save time)
-            print("Error: {}'s seer probability is 0.".format(names[seer-1]))
+            print("Error: {}'s seer probability is 0.".format(players[seer-1]))
         elif killed[seer-1] == 1:
         # You can't take an action if you're dead
-            print("Error: seer {} is dead.".format(names[seer - 1]))
+            print("Error: seer {} is dead.".format(players[seer - 1]))
         else:
         # Player is allowed to commit the action
-            print("{} is investigating {} ...".format(names[seer-1], names[target-1]))
+            print("{} is investigating {} ...".format(players[seer-1], players[target-1]))
             list = []
             for p in perms:
                 if p[seer-1] == "s":
@@ -175,7 +170,7 @@ def seer(seer, target): # Lets a player commit his seer action
                     perms.remove(p)
             
             # Report on results
-            print("{} sees that {} is a {}!".format(names[seer-1], names[target-1], role(res[target-1])))
+            print("{} sees that {} is a {}!".format(players[seer-1], players[target-1], role(res[target-1])))
             calcprobs()
 
 
@@ -239,7 +234,7 @@ def wolf(wolf, target):     # Lets someone commit their wolf action
 
     
 
-dnames = list(names)
+dplayers = list(players)
 drole = list(rolecount)
 
 started = False

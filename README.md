@@ -38,7 +38,7 @@ the screens.
 
 >FE: (for example) Let us say that our game has 4 players, Alice, Bob, Craig and David, and one GM, Zack. In the Python script, Zack runs
 
-    player(['Alice', 'Bob', 'Craig', 'David'])
+    add_players('Alice', 'Bob', 'Craig', 'David')
 
 At the beginning of the game, all players (except the GM) are assigned a random ID number. Only the GM and the player can know someone's secret ID.
 > FE: Randomly, Alice is assigned to be player 1, Bob is player 2, Craig is player 3 and David is player 4. Only Alice and Zack can know that Alice is player 1 at this stage, but the other players might figure out later on...
