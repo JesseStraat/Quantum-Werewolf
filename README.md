@@ -34,11 +34,11 @@ education tool for superpositions, or as a way to pit physicists against each ot
 The game can support any number of players, one of which must be the game master (or GM). The GM does not actively compete with the other players, but runs the game behind
 the screens.
 
->P: (Python script) players are added using the "player" command.
+> P: (Python script) players are added using the "add_players" command.
 
->FE: (for example) Let us say that our game has 4 players, Alice, Bob, Craig and David, and one GM, Zack. In the Python script, Zack runs
+> FE: (for example) Let us say that our game has 4 players, Alice, Bob, Craig and David, and one GM, Zack. In the Python script, Zack runs
 
-    add_players('Alice', 'Bob', 'Craig', 'David')
+    g.add_players('Alice', 'Bob', 'Craig', 'David')
 
 At the beginning of the game, all players (except the GM) are assigned a random ID number. Only the GM and the player can know someone's secret ID.
 > FE: Randomly, Alice is assigned to be player 1, Bob is player 2, Craig is player 3 and David is player 4. Only Alice and Zack can know that Alice is player 1 at this stage, but the other players might figure out later on...
@@ -59,7 +59,7 @@ The players are given how many possible permutations there are, and a table of p
     |     3  |       0.25 | 0.25     |  0.5      | 0     |
     |     4  |       0.25 | 0.25     |  0.5      | 0     |
 
-> P: The above few steps are automatically taken upon running "start()". You can set the deck using "deck".
+> P: The above few steps are automatically taken upon running "g.start()". You can set the deck using "g.set_deck()".
 
 Now the game can officially begin. It starts with a night phase
 
@@ -72,15 +72,15 @@ Now the game can officially begin. It starts with a night phase
 
    > P: this is realised using the "seer" command.
 
-   > FE: Alice looks at Bob's role, so Zack runs "seer('Alice', 'Bob')" and tells Alice she sees he is a werewolf. Permutation [s, v, w, w] gets removed from the superposition, since it is impossible.
+   > FE: Alice looks at Bob's role, so Zack runs "g.seer('Alice', 'Bob')" and tells Alice she sees he is a werewolf. Permutation [s, v, w, w] gets removed from the superposition, since it is impossible.
 
 - Each player with a non-zero probability of being a werewolf can attempt to kill another player. All alive wolves in all permutations must do this at any point during the game in order for someone to be killed by wolves.
 
    > P: this is realised using the "wolf" command.
 
-   > FE: Alice decides to kill Craig, so Zack runs "wolf('Alice', 'Craig')". This makes Craig 1/2 dead in all permutations in which Alice is a werewolf.
+   > FE: Alice decides to kill Craig, so Zack runs "g.wolf('Alice', 'Craig')". This makes Craig 1/2 dead in all permutations in which Alice is a werewolf.
 
-   N.B.: If the second wolf would die while Alice is still alive, it would not make Craig fully dead in the permutations in which Alice is the werewolf, and it stays at 1/2. If, however, Alice decides to attack Craig again, it would make him fully dead in those permutations.
+   > N.B.: If the second wolf would die while Alice is still alive, it would not make Craig fully dead in the permutations in which Alice is the werewolf, and it stays at 1/2. If, however, Alice decides to attack Craig again, it would make him fully dead in those permutations.
 
 - After everyone had their actions, it becomes day.
 
@@ -88,9 +88,9 @@ Now the game can officially begin. It starts with a night phase
 
 - The GM reveals whether anyone died during the night, and if they did, they will reveal the dead person's role. All permutations where he wasn't that role are removed.
 
-   N.B.: A player can only die at night if he is fully dead in all permutations.
+   > N.B.: A player can only die at night if he is fully dead in all permutations.
 
-   > P: This is realised automatically when probabilities are calculated via calcprobs().
+   > P: This is realised automatically when probabilities are calculated via g.calculate_probabilities().
 
  - The GM once again shows all players the table of probabilities, and the number of permutations left.
 
@@ -105,13 +105,13 @@ Now the game can officially begin. It starts with a night phase
         |     3  |   0.272727 | 0.272727  |  0.454545 | 0.181818 |
         |     4  |   0.272727 | 0.272727  |  0.454545 | 0        |
 
-    > P: This is realised through running "results()".
+    > P: This is realised through running "g.get_probabilities()".
 
   - All players who are still alive get to vote to lynch a player. That player instantly dies in all permutations, and his role is revealed.
 
     > P: You may use the "kill" command for these purposes.
 
-    > FE: The town vote to lynch David. Zack runs "kill('David')", which reveals that he was a werewolf! All permutations in which David isn't a werewolf are eliminated.
+    > FE: The town vote to lynch David. Zack runs "g.kill('David')", which reveals that he was a werewolf! All permutations in which David isn't a werewolf are eliminated.
 
   - It becomes night.
 
