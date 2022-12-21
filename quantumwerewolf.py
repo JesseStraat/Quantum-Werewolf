@@ -38,7 +38,8 @@ class Game:
 
     # Identify the player names with their IDs
     def identify_players(self):
-        idfy = [[i+1, self.players[i]] for i in range(len(self.players))]
+        self.player_count = len(self.players)
+        idfy = [[i+1, self.players[i]] for i in range(self.player_count)]
         print(tabulate(idfy, headers = ["ID", "Name"]))
 
     # Start the game
@@ -114,7 +115,12 @@ class Game:
     # Returns the ID corresponding to someone's name
     def ID(self, player_name):
         #name: the name of the player
-        return self.players.index(player_name) + 1
+        return self.players.index(player_name)
+
+    # Returns the ID corresponding to someone's name
+    def name(self, player_id):
+        #name: the name of the player
+        return self.players[player_id]
 
     # Return the role corresponding to some letter
     def role(self, letter):
@@ -138,8 +144,12 @@ class Game:
             self.nperm = len(self.perms)
             permt = np.array(self.perms).T.tolist()
             probst = []
-            for i in range(self.player_count):
-                probst.append([i+1, permt[i].count("v")/self.nperm, permt[i].count("s")/self.nperm, permt[i].count("w")/self.nperm, self.death_probability(self.players[i])])
+            for i, p in enumerate(self.players):
+                P_villager = permt[i].count("v")/self.nperm
+                P_seer = permt[i].count("s")/self.nperm
+                P_werewolf = permt[i].count("w")/self.nperm
+                P_dead =self.death_probability(p)
+                probst.append([i+1, P_villager, P_seer, P_werewolf, P_dead])
             self.probs = probst
 
     # Let a player commit his seer action
@@ -147,48 +157,53 @@ class Game:
         # seer: name of the seer
         # target: name of the target of the seer
         if self.check_started():
-            seer = self.ID(seer)
-            target = self.ID(target)
+            seer_id = self.ID(seer)
+            target_id = self.ID(target)
             if self.probs[seer-1][1] == 0:
                 # Someone may only do his seer action if he can possibly be one (to save time)
-                print("Error: {}'s seer probability is 0.".format(self.players[seer-1]))
-            elif self.killed[seer-1] == 1:
+                print("Error: {}'s seer probability is 0.".format(seer))
+            elif self.killed[seer_id-1] == 1:
                 # You can't take an action if you're dead
-                print("Error: seer {} is dead.".format(self.players[seer - 1]))
+                print("Error: seer {} is dead.".format(seer))
             else:
                 # Player is allowed to commit the action
-                print("{} is investigating {} ...".format(self.players[seer-1], self.players[target-1]))
-                list = []
+                print("{} is investigating {} ...".format(seer, target))
+                p_list = []
                 for p in self.perms:
-                    if p[seer-1] == "s":
-                        list.append(p)
+                    if p[seer_id] == "s":
+                        p_list.append(p)
 
                 # Choose an outcome
-                res = random.choice(list)
+                observation = random.choice(list)[target_id]
 
                 # Collapse the wave function
-                for p in list:
-                    if p[target-1] != res[target-1]:
+                for p in p_list:
+                    if p[target_id] != observation:
                         self.perms.remove(p)
 
                 # Report on results
-                print("{} sees that {} is a {}!".format(self.players[seer-1], self.players[target-1], self.role(res[target-1])))
+                print("{} sees that {} is a {}!".format(seer, target, self.role(observation)))
                 self.calculate_probabilities()
 
     # Force someone's death (e.g., after a vote). Otherwise used only by script
     def kill(self, target):
         # target: the name of the target
+        target_id = self.ID(target)
         if self.check_started():
+            if self.killed[target_id] == 1:
+                print("{} is already dead.")
+                return None
+
             print("{} was killed!".format(target))
 
             # Chooses an outcome
             res = random.choice(self.perms)
-            prole = res[self.ID(target)-1]
+            prole = res[target_id]
             permt = list(self.perms)
 
             # Collapse the wave function
             for p in permt:
-                if p[self.ID(target)-1] != prole:
+                if p[target_id] != prole:
                     self.perms.remove(p)
 
             # Report on results
@@ -199,25 +214,26 @@ class Game:
                 self.werewolf_count -= 1
                 for p in self.perms:
                     for i in range(self.player_count):
-                        p[i+self.player_count][self.ID(target)-1] = 0
+                        deaths[i][target_id] = 0
 
-            self.killed[self.ID(target)-1] = 1
+            self.killed[target_id] = 1
             self.calculate_probabilities()
 
     # Shows the probability of death for some player
     def death_probability(self, name):
         # name: name of player
+        name_id = self.ID(name)
         if self.check_started():
             dead = 0
-            if self.killed[self.ID(name) - 1] == 1:
+            if self.killed[name_id] == 1:
                 dead = 1
             else:
                 deathn = 0
                 for p in self.perms:
                     for i in range(self.player_count):
-                        if p[i] == "w" and p[self.ID(name)-1] != "w":
-                            deathn += self.deaths[self.ID(name)-1][i]
-                dead = deathn/len(self.perms)
+                        if p[i] == "w" and p[name_id] != "w":
+                            deathn += self.deaths[name_id][i]
+                dead = deathn / len(self.perms)
                 if dead >= 1:
                     self.kill(name)
             return dead
@@ -226,12 +242,15 @@ class Game:
     def wolf(self, wolf, target):
         # wolf: the name of the wolf
         # target: the name of the wolf's target
+        wolf_id = self.ID(wolf)
+        target_id = self.ID(target)
         if self.check_started():
-            if self.killed[self.ID(wolf)-1] == 1:
+            if self.killed[wolf_id] == 1:
                 print("Error: wolf {} is dead".format(wolf))
             else:
-                self.deaths[self.ID(target) - 1][self.ID(wolf) - 1] = 1/self.werewolf_count
+                self.deaths[target_id][wolf_id] = 1 / self.werewolf_count
                 print("{} has mauled {}!".format(wolf, target))
+                self.calculate_probabilities()
 
 
 if __name__ == "__main__":
