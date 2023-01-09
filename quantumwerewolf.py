@@ -355,6 +355,8 @@ if __name__ == "__main__":
         os.system('clear')
         print('Night falls and all players take their actions in turns privately\n')
 
+        start_probabilities = g.probs
+
         for i, p in enumerate(g.players):
             if g.killed[i] == 1:
                 continue
@@ -364,7 +366,7 @@ if __name__ == "__main__":
             print("{}'s turn".format(p))
 
             # display game and player info (role superposition)
-            player_probabilities = g.probs[i]
+            player_probabilities = start_probabilities[i]
             print('\n  Your role:')
             print("    Villager: {:3.0f}%".format(100*player_probabilities[1]))
             print("    Seer:     {:3.0f}%".format(100*player_probabilities[2]))
