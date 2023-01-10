@@ -157,40 +157,36 @@ class Game:
         if self.check_started():
             seer_id = self.ID(seer)
             target_id = self.ID(target)
-            if self.probs[seer_id][2] == 0:
-                # Someone may only do his seer action if he can possibly be one (to save time)
-                print("ERROR: {}'s seer probability is 0.".format(seer))
-            elif self.killed[seer_id] == 1:
-                # You can't take an action if you're dead
-                print("ERROR: seer {} is dead.".format(seer))
-            else:
-                # Player is allowed to take the action
-                print("{} is investigating {} ...".format(seer, target))
-                p_list = []
-                for p in self.permutations:
-                    if p[seer_id] == "s":
-                        p_list.append(p)
 
-                # Choose an outcome
-                assert len(p_list) > 0
-                observation = random.choice(p_list)[target_id]
+            # Check if player is alive and can be the seer
+            assert self.killed[seer_id] != 1, "ERROR: seer {} is dead.".format(seer)
+            assert self.probs[seer_id][2] != 0, "ERROR: {}'s seer probability is 0.".format(seer)
 
-                # Collapse the wave function
-                for p in p_list:
-                    if p[target_id] != observation:
-                        self.permutations.remove(p)
+            # Player is allowed to take the action
+            print("{} is investigating {} ...".format(seer, target))
+            p_list = []
+            for p in self.permutations:
+                if p[seer_id] == "s":
+                    p_list.append(p)
 
-                # Report on results
-                print("{} sees that {} is a {}!".format(seer, target, self.role(observation)))
+            # Choose an outcome
+            assert len(p_list) > 0, "ERROR: seer list is empty"
+            observation = random.choice(p_list)[target_id]
+
+            # Collapse the wave function
+            for p in p_list:
+                if p[target_id] != observation:
+                    self.permutations.remove(p)
+
+            # Report on results
+            print("{} sees that {} is a {}!".format(seer, target, self.role(observation)))
 
     # Force someone's death (e.g., after a vote). Otherwise used only by script
     def kill(self, target):
         # target: the name of the target
         target_id = self.ID(target)
         if self.check_started():
-            if self.killed[target_id] == 1:
-                print("{} is already dead.")
-                return None
+            assert self.killed[target_id] != 1, "ERROR:{} is already dead.".format(target)
 
             print("{} was killed!".format(target))
 
@@ -242,11 +238,9 @@ class Game:
         wolf_id = self.ID(wolf)
         target_id = self.ID(target)
         if self.check_started():
-            if self.killed[wolf_id] == 1:
-                print("Error: wolf {} is dead".format(wolf))
-            else:
-                self.deaths[target_id][wolf_id] = 1 / self.werewolf_count
-                print("{} has mauled {}!".format(wolf, target))
+            assert self.killed[wolf_id] != 1, "ERROR: wolf {} is dead".format(wolf)
+            self.deaths[target_id][wolf_id] = 1 / self.werewolf_count
+            print("{} has mauled {}!".format(wolf, target))
 
     def check_win(self):
         villager_win = True
