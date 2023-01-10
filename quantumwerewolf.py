@@ -150,7 +150,7 @@ class Game:
                 probst.append([i+1, P_villager, P_seer, P_werewolf, P_dead])
             self.probs = probst
 
-    # Let a player commit his seer action
+    # Let a player take his seer action
     def seer(self, seer, target):
         # seer: name of the seer
         # target: name of the target of the seer
@@ -164,7 +164,7 @@ class Game:
                 # You can't take an action if you're dead
                 print("ERROR: seer {} is dead.".format(seer))
             else:
-                # Player is allowed to commit the action
+                # Player is allowed to take the action
                 print("{} is investigating {} ...".format(seer, target))
                 p_list = []
                 for p in self.permutations:
@@ -172,6 +172,7 @@ class Game:
                         p_list.append(p)
 
                 # Choose an outcome
+                assert len(p_list) > 0
                 observation = random.choice(p_list)[target_id]
 
                 # Collapse the wave function
@@ -181,7 +182,6 @@ class Game:
 
                 # Report on results
                 print("{} sees that {} is a {}!".format(seer, target, self.role(observation)))
-                self.calculate_probabilities()
 
     # Force someone's death (e.g., after a vote). Otherwise used only by script
     def kill(self, target):
@@ -247,7 +247,6 @@ class Game:
             else:
                 self.deaths[target_id][wolf_id] = 1 / self.werewolf_count
                 print("{} has mauled {}!".format(wolf, target))
-                self.calculate_probabilities()
 
     def check_win(self):
         villager_win = True
