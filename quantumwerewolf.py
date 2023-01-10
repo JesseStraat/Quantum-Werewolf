@@ -287,13 +287,14 @@ def ask_yesno(query, yes, no):
 
 def ask_player(query):
     answer = input(query + ' Name: ')
-    if answer in g.players:
+    if answer in g.players and g.killed[g.ID(answer)] == 0:
         return answer
     else:
-        print('  "{}" is not a player'.format(answer))
-        print('  Players are:')
-        for p in g.players:
-            print("    {}".format(p))
+        print('  "{}" is not a living player'.format(answer))
+        print('  Players alive are:')
+        for i, p in enumerate(g.players):
+            if g.killed[i] == 0:
+                print("    {}".format(p))
 
         return ask_player(query)
 
