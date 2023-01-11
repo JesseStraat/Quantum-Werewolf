@@ -369,15 +369,15 @@ if __name__ == "__main__":
             print("    Seer:     {:3.0f}%".format(100*player_probabilities[2]))
             print("    werewolf: {:3.0f}%\n".format(100*player_probabilities[3]))
 
-            # wolf
-            if player_probabilities[3] != 0:
-                target = ask_player('  WOLF: Who do you attack?\n   ')
-                g.wolf(p,target)
-
             # seer
             if player_probabilities[2] != 0:
                 target = ask_player('  SEER: Whose role do you inspect?\n   ')
                 g.seer(p,target)
+
+            # wolf
+            if player_probabilities[3] != 0:
+                target = ask_player('  WOLF: Who do you attack?\n   ')
+                g.wolf(p,target)
 
             input("\n(press ENTER to continue)")
 
