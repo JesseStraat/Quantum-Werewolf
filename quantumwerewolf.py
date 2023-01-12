@@ -1,8 +1,6 @@
-from sympy.utilities.iterables import multiset_permutations
-from tabulate import tabulate
-import numpy as np
-import random
-import os
+from itertools import permutations
+from random import shuffle, choice
+from os import system
 
 class Game:
 
@@ -38,23 +36,24 @@ class Game:
         self.role_count[role] = amount
 
     # Identify the player names with their IDs
-    def identify_players(self):
-        self.player_count = len(self.players)
-        idfy = [[i+1, self.players[i]] for i in range(self.player_count)]
-        print(tabulate(idfy, headers = ["ID", "Name"]))
+    # def identify_players(self):
+    #     self.player_count = len(self.players)
+    #     idfy = [[i+1, self.players[i]] for i in range(self.player_count)]
+    #     print(tabulate(idfy, headers = ["ID", "Name"]))
 
     # Start the game
     def start(self):
         if self.check_started(False):
-
-            # Shuffling the player order
-            # random.shuffle(self.players)
 
             # Determine playercount or generate players if none are given
             if self.players != []:
                 self.player_count = len(self.players)
             else:
                 self.players = ["Player " + str(x+1) for x in range(self.player_count)]
+
+            # Generate permutation list for anomymous printing in print_probabilities()
+            self.print_permutation = list(range(self.player_count))
+            shuffle(self.print_permutation)
 
             # Determine (valid) amount of villager in the game
             villagers = self.player_count - sum(self.role_count.values())
@@ -67,7 +66,7 @@ class Game:
             self.werewolf_count = self.role_count['werewolf']
 
             # Generates the list of all role permutations
-            self.permutations = list(multiset_permutations(roles))
+            self.permutations = list(permutations(roles))
 
             # Set all players to be fully alive
             self.deaths = []
@@ -129,26 +128,30 @@ class Game:
         return roles[letters.index(letter)]
 
     # Gives the table of probabilities
-    def get_probabilities(self):
+    def print_probabilities(self):
         if self.check_started():
             self.calculate_probabilities()
             print("There are {} possible permutations left.\n".format(self.nperm))
-            print(tabulate(self.probs, headers = ["Player", "Villagers", "Seer", "Werewolf", "Dead"]))
+            print("{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}".format("Player", "Villagers", "Seer", "Werewolf", "Dead"))
+            for i, j in enumerate(self.print_permutation):
+                p = self.probs[j]
+                if p['dead'] == 1:
+                    i = p['name']
+                print("{:>12s}{:11.0f}%{:11.0f}%{:11.0f}%{:11.0f}%".format(str(i), 100*p['villager'], 100*p['seer'], 100*p['werewolf'], 100*p['dead']))
 
 
     # Calculates the probabilities
     def calculate_probabilities(self):
         if self.check_started():
             self.nperm = len(self.permutations)
-            permt = np.array(self.permutations).T.tolist()
-            probst = []
+            transpose = list(zip(*self.permutations))
+            self.probs = []
             for i, p in enumerate(self.players):
-                P_villager = permt[i].count("v")/self.nperm
-                P_seer = permt[i].count("s")/self.nperm
-                P_werewolf = permt[i].count("w")/self.nperm
+                P_villager = transpose[i].count("v") / self.nperm
+                P_seer = transpose[i].count("s") / self.nperm
+                P_werewolf = transpose[i].count("w") / self.nperm
                 P_dead = self.death_probability(p)
-                probst.append([i+1, P_villager, P_seer, P_werewolf, P_dead])
-            self.probs = probst
+                self.probs.append({'name': p, 'werewolf': P_werewolf, 'villager': P_villager, 'seer': P_seer, 'dead': P_dead})
 
     # Let a player take his seer action
     def seer(self, seer, target):
@@ -161,7 +164,7 @@ class Game:
             # Check if player and target are alive and player can be the seer
             assert self.killed[seer_id] != 1, "ERROR: in seer() seer {} is dead.".format(seer)
             assert self.killed[target_id] != 1, "ERROR: in seer() target {} is dead.".format(target)
-            assert self.probs[seer_id][2] != 0, "ERROR: {}'s seer probability is 0.".format(seer)
+            assert self.probs[seer_id]['seer'] != 0, "ERROR: in seer() {}'s seer probability is 0.".format(seer)
 
             # Player is allowed to take the action
             print("{} is investigating {} ...".format(seer, target))
@@ -172,7 +175,7 @@ class Game:
 
             # Choose an outcome
             assert len(p_list) > 0, "ERROR: seer list is empty"
-            observation = random.choice(p_list)[target_id]
+            observation = choice(p_list)[target_id]
 
             # Collapse the wave function
             for p in p_list:
@@ -192,7 +195,7 @@ class Game:
             print("{} was killed!".format(target))
 
             # Chooses an outcome
-            res = random.choice(self.permutations)
+            res = choice(self.permutations)
             prole = res[target_id]
             permt = list(self.permutations)
 
@@ -232,18 +235,19 @@ class Game:
                     self.kill(name)
             return dead
 
-    # Lets someone commit their wolf action
-    def wolf(self, wolf, target):
-        # wolf: the name of the wolf
-        # target: the name of the wolf's target
-        wolf_id = self.ID(wolf)
+    # Lets someone commit their werewolf action
+    def werewolf(self, werewolf, target):
+        # werewolf: the name of the werewolf
+        # target: the name of the werewolf's target
+        werewolf_id = self.ID(werewolf)
         target_id = self.ID(target)
         if self.check_started():
-            assert self.killed[wolf_id] != 1, "ERROR: in wolf() wolf {} is dead".format(wolf)
-            assert self.killed[target_id] != 1, "ERROR: in wolf() target {} is dead".format(target)
+            assert self.killed[werewolf_id] != 1, "ERROR: in werewolf() werewolf {} is dead".format(werewolf)
+            assert self.killed[target_id] != 1, "ERROR: in werewolf() target {} is dead".format(target)
+            assert self.probs[werewolf_id]['werewolf'] != 0, "ERROR: in werewolf() {}'s werewolf probability is 0".format(target)
 
-            self.deaths[target_id][wolf_id] = 1 / self.werewolf_count
-            print("{} has mauled {}!".format(wolf, target))
+            self.deaths[target_id][werewolf_id] = 1 / self.werewolf_count
+            print("{} has mauled {}!".format(werewolf, target))
 
     def check_win(self):
         villager_win = True
@@ -298,7 +302,7 @@ def ask_player(query):
 if __name__ == "__main__":
     g = Game()
 
-    os.system('clear')
+    system('clear')
 
     print("Enter player name(s) separated by spaces.")
     print("Enter no name to continue.")
@@ -312,7 +316,7 @@ if __name__ == "__main__":
         else:
             new_player = False
 
-    os.system('clear')
+    system('clear')
 
     print("Current Players:")
     for i, p in enumerate(g.players):
@@ -339,7 +343,7 @@ if __name__ == "__main__":
 
     ask_yesno('', "roles confirmed!",  ask_roles)
 
-    os.system('clear')
+    system('clear')
 
     # Start game
     g.start()
@@ -349,7 +353,7 @@ if __name__ == "__main__":
     while g.started == True:
         turn_counter += 1
         # night
-        os.system('clear')
+        system('clear')
         print('Night falls and all players take their actions in turns privately\n')
 
         start_probabilities = g.probs
@@ -359,36 +363,36 @@ if __name__ == "__main__":
                 continue
 
             input("{}'s turn (press ENTER to continue)".format(p))
-            os.system('clear')
+            system('clear')
             print("{}'s turn".format(p))
 
             # display game and player info (role superposition)
             player_probabilities = start_probabilities[i]
             print('\n  Your role:')
-            print("    Villager: {:3.0f}%".format(100*player_probabilities[1]))
-            print("    Seer:     {:3.0f}%".format(100*player_probabilities[2]))
-            print("    werewolf: {:3.0f}%\n".format(100*player_probabilities[3]))
+            print("    Villager: {:3.0f}%".format(100*player_probabilities['villager']))
+            print("    Seer:     {:3.0f}%".format(100*player_probabilities['seer']))
+            print("    werewolf: {:3.0f}%\n".format(100*player_probabilities['werewolf']))
 
             # seer
-            if player_probabilities[2] != 0:
+            if player_probabilities['seer'] != 0:
                 target = ask_player('  SEER: Whose role do you inspect?\n   ')
                 g.seer(p,target)
 
-            # wolf
-            if player_probabilities[3] != 0:
-                target = ask_player('  WOLF: Who do you attack?\n   ')
-                g.wolf(p,target)
+            # werewolf
+            if player_probabilities['werewolf'] != 0:
+                target = ask_player('  WEREWOLF: Who do you attack?\n   ')
+                g.werewolf(p,target)
 
             input("\n(press ENTER to continue)")
 
-            os.system('clear')
+            system('clear')
 
         # day
-        input('all player have had their turn (press ENTER to continue)')
-        os.system('clear')
+        input('All player have had their turn (press ENTER to continue)')
+        system('clear')
         print('The day begins')
 
-        g.get_probabilities()
+        g.print_probabilities()
 
         # vote
         target = ask_player('\nWHOLE VILLAGE: Who do you lynch?\n   ')
