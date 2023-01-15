@@ -167,10 +167,7 @@ class Game:
 
             # Player is allowed to take the action
             print("{} is investigating {} ...".format(seer, target))
-            p_list = []
-            for p in self.permutations:
-                if p[seer_id] == "s":
-                    p_list.append(p)
+            p_list = [p in self.permutations if p[seer_id] == 's']
 
             # Choose an outcome
             assert len(p_list) > 0, "ERROR: seer list is empty"
